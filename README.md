@@ -24,6 +24,18 @@ property-scraper/
 └── README.md
 ```
 
+🚀 **Live Demo Available**
+
+You can explore the deployed demo version of this project without setting anything up locally:
+
+- ✅ **API Endpoint:** [`https://absorbing-global-jump.glitch.me/api/listings`](https://absorbing-global-jump.glitch.me/api/listings)
+- 📘 **Swagger UI:** [`https://absorbing-global-jump.glitch.me/api-docs`](https://absorbing-global-jump.glitch.me/api-docs)
+- 📄 **Swagger JSON:** [`https://absorbing-global-jump.glitch.me/swagger.json`](https://absorbing-global-jump.glitch.me/swagger.json)
+
+> Feel free to test the API and explore the documentation above. If you want to run it locally or with Docker, see the instructions below. 🚧
+
+---
+
 ## Setup and Usage Options
 
 You can run this project in two ways: **Docker** or **Local**. Choose one based on your environment and preferences.
