@@ -19,12 +19,19 @@ app.use(express.json());
 
 app.get('/api/listings', async (req, res) => {
     try {
-        // Always try to copy from fallback (even if file exists)
+        // Ensure the /data directory exists
+        try {
+            await fs.mkdir(path.dirname(DATA_PATH), { recursive: true });
+        } catch (mkdirError) {
+            console.warn('Could not create data directory:', mkdirError);
+        }
+
+        // Try to copy from fallback
         try {
             await fs.copyFile(FALLBACK_PATH, DATA_PATH);
             console.log('Copied listings.json from fallback.');
         } catch (copyError) {
-            console.warn('No fallback listings.json to copy.');
+            console.warn('No fallback listings.json to copy or copy failed:', copyError.message);
         }
 
         // Try to read from the DATA_PATH
@@ -76,7 +83,6 @@ app.get('/api/listings', async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
-
 
 // Serve the raw Swagger YAML as JSON at /swagger.json
 app.get('/swagger.json', (req, res) => {
