@@ -1,0 +1,5 @@
+node_modules/
+scraper/venv/
+scraper/__pycache__/
+api/swagger.json
+.DS_Store

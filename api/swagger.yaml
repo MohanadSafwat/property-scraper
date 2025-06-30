@@ -1,0 +1,96 @@
+openapi: 3.0.3
+info:
+  title: Property Listings API
+  description: API for retrieving property listings with filtering and pagination
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+    description: Local server
+paths:
+  /api/listings:
+    get:
+      summary: Retrieve property listings
+      description: Fetches property listings with optional filtering by price range and location, and pagination.
+      parameters:
+        - in: query
+          name: minPrice
+          schema:
+            type: integer
+          description: Minimum price for filtering listings
+          example: 100000
+        - in: query
+          name: maxPrice
+          schema:
+            type: integer
+          description: Maximum price for filtering listings
+          example: 500000
+        - in: query
+          name: location
+          schema:
+            type: string
+          description: Location filter (case-insensitive substring match)
+          example: NR7
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: Page number for pagination
+          example: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+          description: Number of listings per page
+          example: 10
+      responses:
+        '200':
+          description: Successful response with paginated listings
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  listings:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        title:
+                          type: string
+                          example: 4 bedroom detached house for sale
+                        price:
+                          type: integer
+                          example: 420000
+                        location:
+                          type: string
+                          example: NR7
+                        link:
+                          type: string
+                          example: https://repossessedhousesforsale.com/properties/4-bedroom-detached-house-for-sale-98/
+                  pagination:
+                    type: object
+                    properties:
+                      currentPage:
+                        type: integer
+                        example: 1
+                      totalPages:
+                        type: integer
+                        example: 5
+                      totalItems:
+                        type: integer
+                        example: 50
+                      itemsPerPage:
+                        type: integer
+                        example: 10
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Internal server error

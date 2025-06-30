@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  scraper:
+    build:
+      context: ./scraper
+      dockerfile: Dockerfile
+    volumes:
+      - data-volume:/app/data  
+    environment:
+      - PYTHONUNBUFFERED=1
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - data-volume:/app/data  
+    depends_on:
+      - scraper
+    environment:
+      - NODE_ENV=production
+
+volumes:
+  data-volume:
