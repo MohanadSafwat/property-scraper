@@ -3,9 +3,13 @@ const fs = require('fs').promises;
 const path = require('path');
 const swaggerUi = require('swagger-ui-express');
 const yaml = require('yamljs');
+const cors = require('cors');
 
 const app = express();
 const port = 3000;
+
+app.use(cors()); // Allows all origins
+app.use(express.json());
 
 const DATA_PATH = path.join(__dirname, 'data', 'listings.json');
 const FALLBACK_PATH = path.join(__dirname, '..', 'scraper', 'data', 'listings.json');
@@ -15,7 +19,6 @@ const swaggerDocument = yaml.load('./swagger.yaml');
 
 // Serve Swagger UI
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-app.use(express.json());
 
 app.get('/api/listings', async (req, res) => {
     try {
@@ -45,7 +48,7 @@ app.get('/api/listings', async (req, res) => {
         let listings = JSON.parse(data);
 
         // Apply filters
-        const { minPrice, maxPrice, location, page = 1, limit = 10 } = req.query;
+        const { minPrice, maxPrice, location, sortField, sortDirection = 'asc', page = 1, limit = 10 } = req.query;
 
         if (minPrice) {
             listings = listings.filter(l => l.price >= parseInt(minPrice));
@@ -59,6 +62,24 @@ app.get('/api/listings', async (req, res) => {
             listings = listings.filter(l =>
                 l.location.toLowerCase().includes(location.toLowerCase())
             );
+        }
+
+        // Apply sorting
+        if (sortField && ['title', 'price', 'location'].includes(sortField)) {
+            listings = listings.sort((a, b) => {
+                const aVal = a[sortField];
+                const bVal = b[sortField];
+
+                if (typeof aVal === 'string') {
+                    return sortDirection === 'asc'
+                        ? aVal.localeCompare(bVal)
+                        : bVal.localeCompare(aVal);
+                }
+
+                return sortDirection === 'asc'
+                    ? aVal - bVal
+                    : bVal - aVal;
+            });
         }
 
         // Apply pagination
@@ -87,7 +108,7 @@ app.get('/api/listings', async (req, res) => {
 // Serve the raw Swagger YAML as JSON at /swagger.json
 app.get('/swagger.json', (req, res) => {
     res.setHeader('Content-Type', 'application/json');
-    res.send(swaggerDocument); // already loaded as JSON via yaml.load
+    res.send(swaggerDocument);
 });
 
 app.listen(port, () => {

@@ -1,0 +1,58 @@
+* {
+    margin: 0;
+}
+
+body {
+    background-color: #f0f2f5;
+}
+
+.dashboard-container {
+    padding: 24px;
+    background: #f0f2f5;
+}
+
+.filter-card {
+    margin-bottom: 24px;
+}
+
+.stats-container {
+    margin-bottom: 24px;
+}
+
+.stat-card {
+    width: 200px;
+}
+
+.pagination-container {
+    margin-top: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.action-link {
+    color: #1890ff;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.action-link:hover {
+    color: #40a9ff;
+}
+
+.text-green-600 {
+    color: #52c41a;
+}
+
+.font-medium {
+    font-weight: 500;
+}
+
+.font-semibold {
+    font-weight: 600;
+}
+
+.filter-card .ant-space {
+    gap: 16px !important;
+}

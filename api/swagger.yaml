@@ -1,52 +1,63 @@
 openapi: 3.0.3
 info:
   title: Property Listings API
-  description: API for retrieving property listings with filtering and pagination
+  description: API for retrieving property listings with filtering, sorting, and pagination.
   version: 1.0.0
 servers:
   - url: http://localhost:3000
     description: Local server
+  - url: https://property-scraper.glitch.me
+    description: Production server
 paths:
   /api/listings:
     get:
-      summary: Retrieve property listings
-      description: Fetches property listings with optional filtering by price range and location, and pagination.
+      summary: Get property listings
+      description: Retrieve a paginated list of property listings with optional filtering and sorting.
       parameters:
-        - in: query
-          name: minPrice
+        - name: minPrice
+          in: query
+          description: Minimum price filter
           schema:
             type: integer
-          description: Minimum price for filtering listings
-          example: 100000
-        - in: query
-          name: maxPrice
+        - name: maxPrice
+          in: query
+          description: Maximum price filter
           schema:
             type: integer
-          description: Maximum price for filtering listings
-          example: 500000
-        - in: query
-          name: location
+        - name: location
+          in: query
+          description: Location filter (case-insensitive substring match)
           schema:
             type: string
-          description: Location filter (case-insensitive substring match)
-          example: NR7
-        - in: query
-          name: page
+        - name: page
+          in: query
+          description: Page number for pagination (default: 1)
           schema:
             type: integer
             default: 1
-          description: Page number for pagination
-          example: 1
-        - in: query
-          name: limit
+        - name: limit
+          in: query
+          description: Number of listings per page (default: 10)
           schema:
             type: integer
             default: 10
-          description: Number of listings per page
-          example: 10
+        - name: sortField
+          in: query
+          description: Field to sort by (title, price, location)
+          schema:
+            type: string
+            enum: [title, price, location]
+            default: price
+        - name: sortDirection
+          in: query
+          description: Sort direction (asc or desc)
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: asc
       responses:
         '200':
-          description: Successful response with paginated listings
+          description: Successful response
           content:
             application/json:
               schema:
@@ -59,31 +70,32 @@ paths:
                       properties:
                         title:
                           type: string
-                          example: 4 bedroom detached house for sale
                         price:
-                          type: integer
-                          example: 420000
+                          type: number
                         location:
                           type: string
-                          example: NR7
                         link:
                           type: string
-                          example: https://repossessedhousesforsale.com/properties/4-bedroom-detached-house-for-sale-98/
                   pagination:
                     type: object
                     properties:
                       currentPage:
                         type: integer
-                        example: 1
                       totalPages:
                         type: integer
-                        example: 5
                       totalItems:
                         type: integer
-                        example: 50
                       itemsPerPage:
                         type: integer
-                        example: 10
+        '404':
+          description: No listings data available
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
         '500':
           description: Internal server error
           content:
@@ -93,4 +105,3 @@ paths:
                 properties:
                   error:
                     type: string
-                    example: Internal server error

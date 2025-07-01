@@ -1,14 +1,34 @@
-version: '3.8'
-
 services:
-  scraper:
-    build:
-      context: ./scraper
-      dockerfile: Dockerfile
-    volumes:
-      - data-volume:/app/data  
+  wordpress:
+    image: wordpress:6.6
+    ports:
+      - "8080:80"
     environment:
-      - PYTHONUNBUFFERED=1
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+      APP_ENV: ${APP_ENV}
+      HIDDEN_DEALS_API_BASE: ${HIDDEN_DEALS_API_BASE}
+    volumes:
+      - ./wp-hidden-deals:/var/www/html/wp-content/plugins/wp-hidden-deals
+    depends_on:
+      db:
+        condition: service_started
+    networks:
+      - app-network
+
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - app-network
 
   api:
     build:
@@ -17,11 +37,22 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - data-volume:/app/data  
-    depends_on:
-      - scraper
-    environment:
-      - NODE_ENV=production
+      - ./api/data:/app/data
+    networks:
+      - app-network
+
+  scraper:
+    build:
+      context: ./scraper
+      dockerfile: Dockerfile
+    volumes:
+      - ./api/data:/app/data
+    networks:
+      - app-network
 
 volumes:
-  data-volume:
+  db_data:
+
+networks:
+  app-network:
+    driver: bridge
